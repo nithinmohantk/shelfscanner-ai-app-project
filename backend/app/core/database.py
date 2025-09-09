@@ -12,17 +12,29 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # Database URL for async operations
-DATABASE_URL = settings.database_url.replace("postgresql://", "postgresql+asyncpg://")
+if "postgresql" in settings.database_url:
+    DATABASE_URL = settings.database_url.replace("postgresql://", "postgresql+asyncpg://")
+else:
+    DATABASE_URL = settings.database_url
 
-# Create async engine
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_size=10,
-    max_overflow=20,
-    pool_pre_ping=True,
-    pool_recycle=300,
-)
+# Create async engine with database-specific configuration
+if DATABASE_URL.startswith("sqlite"):
+    # SQLite configuration - no connection pooling
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=settings.DEBUG,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    # PostgreSQL configuration - with connection pooling
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,
+        pool_recycle=300,
+    )
 
 # Create async session maker
 AsyncSessionLocal = async_sessionmaker(

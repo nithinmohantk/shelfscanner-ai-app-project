@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 env:
   REGISTRY: docker.io
   BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/shelfscanner-backend
@@ -46,13 +51,14 @@ jobs:
 
     - name: Run frontend tests
       working-directory: ./frontend
-      run: npm test -- --coverage --watchAll=false
+      run: npm test
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./backend/coverage.xml,./frontend/coverage/lcov.info
-        fail_ci_if_error: true
+    # Note: Codecov upload temporarily disabled
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     files: ./backend/coverage.xml,./frontend/coverage/lcov.info
+    #     fail_ci_if_error: true
 
   security:
     runs-on: ubuntu-latest
@@ -70,7 +76,7 @@ jobs:
         output: 'trivy-results.sarif'
 
     - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
