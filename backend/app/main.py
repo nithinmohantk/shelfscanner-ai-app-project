@@ -2,7 +2,7 @@
 ShelfScanner FastAPI Backend Application
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -86,7 +86,7 @@ def create_application() -> FastAPI:
     # Health check endpoint
     @app.get("/health")
     @limiter.limit("100/minute")
-    async def health_check(request):
+    async def health_check(request: Request):
         """Health check endpoint"""
         return {
             "status": "healthy",
