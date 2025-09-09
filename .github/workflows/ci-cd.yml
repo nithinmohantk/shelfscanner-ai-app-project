@@ -13,8 +13,8 @@ permissions:
 
 env:
   REGISTRY: docker.io
-  BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/shelfscanner-backend
-  FRONTEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/shelfscanner-frontend
+  BACKEND_IMAGE_NAME: thingxcloud/shelfscanner-backend
+  FRONTEND_IMAGE_NAME: thingxcloud/shelfscanner-frontend
 
 jobs:
   test:
@@ -96,7 +96,7 @@ jobs:
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        username: thingxcloud
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Extract metadata for backend
